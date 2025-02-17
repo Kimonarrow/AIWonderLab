@@ -4,104 +4,358 @@
   <meta charset="UTF-8">
   <title>AiWonderLAB</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>AiWonderLAB</h1>
-    <p>"We don't know where we're going and that's Wonderful."</p>
+  <div class="gradient-bg"></div>
+  <div id="particles-js"></div>
+  <header class="hero">
+    <div class="hero-content">
+      <h1>AiWonderLAB</h1>
+      <p class="tagline">"We don't know where we're going and that's Wonderful."</p>
+      <div class="hero-cta">
+        <a href="#connect" class="button primary"><i class="fas fa-rocket"></i> Join Our Journey</a>
+        <a href="#experiments" class="button secondary"><i class="fas fa-flask"></i> See Experiments</a>
+      </div>
+      <div class="scroll-indicator">
+        <span>Scroll to Explore</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+    </div>
   </header>
+  
   <nav>
-    <ul>
-      <li><a href="#connect">Connect</a></li>
-      <li><a href="#how-we-work">How We Work</a></li>
-      <li><a href="#experiments">Experiments</a></li>
-      <li><a href="#why-we-do-it">Why We Do It</a></li>
-      <li><a href="#backing">Who's Backing us?</a></li>
-      <li><a href="#what-we-do">What Are We Doing?</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
+    <div class="nav-container">
+      <div class="nav-logo">AiWonderLAB</div>
+      <button class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="nav-links">
+        <li><a href="#how-we-work">How We Work</a></li>
+        <li><a href="#experiments">Experiments</a></li>
+        <li><a href="#why-we-do-it">Why We Do It</a></li>
+        <li><a href="#backing">Who's Backing us?</a></li>
+        <li><a href="#what-we-do">What We Do</a></li>
+        <li><a href="#connect" class="nav-cta">Connect</a></li>
+      </ul>
+    </div>
   </nav>
   <main>
-    <section id="connect">
-      <h2>Connect</h2>
-      <ul>
-        <li><a href="#experiments">Explore Our Experiments</a></li>
-        <li><a href="#contact">Contact Us</a></li>
-      </ul>
+    <section id="how-we-work" class="section-card">
+      <div class="section-content">
+        <h2>How We Work</h2>
+        <div class="image-grid">
+          <img src="assets/u4228479817_A_person_discovering_the_world_of_AI_--v_6.1_d1e2513e-2470-4e8f-9662-ac3746a5d90e_1.png" alt="AI Discovery Process" class="feature-image">
+          <img src="assets/u4228479817_A_person_discovering_the_world_of_AI_--v_6.1_3610389a-1f94-445b-abad-39ab6226059f_2.png" alt="AI Exploration" class="feature-image">
+        </div>
+        <div class="process-cards">
+          <div class="process-card">
+            <div class="process-icon"><i class="fas fa-lightbulb"></i></div>
+            <h3>Curiosity</h3>
+            <p>We start with a thought, problem, or an inspiration to tackle.</p>
+          </div>
+          <div class="process-card">
+            <div class="process-icon"><i class="fas fa-gamepad"></i></div>
+            <h3>Play</h3>
+            <p>We willingly play with any game/scenario and actively test, tweak, fail, retry on all action that need to evolve on.</p>
+          </div>
+          <div class="process-card">
+            <div class="process-icon"><i class="fas fa-star"></i></div>
+            <h3>Result</h3>
+            <p>Something happens - a discovery, an insight, a manifestation, or an unexpected result. We add it up and move forward.</p>
+          </div>
+        </div>
+      </div>
     </section>
-    <section id="how-we-work">
-      <h2>How We Work</h2>
-      <ol>
-        <li>
-          <strong>Curiosity</strong>
-          <p>We start with a thought, problem, or an inspiration to tackle.</p>
-        </li>
-        <li>
-          <strong>Play</strong>
-          <p>We willingly play with any game/scenario and actively test, tweak, fail, retry on all action that need to evolve on.</p>
-        </li>
-        <li>
-          <strong>Result</strong>
-          <p>Something happens - a discovery, an insight, a manifestation, or an unexpected result. We add it up and move forward.</p>
-        </li>
-      </ol>
+
+    <section id="experiments" class="section-card">
+      <div class="section-content">
+        <h2>Experiments</h2>
+        <div class="experiment-grid">
+          <div class="experiment-card">
+            <div class="experiment-icon"><i class="fas fa-rocket"></i></div>
+            <h3>TheAccelerators.ai</h3>
+            <p>A platform redefining influence and acceleration in AI.</p>
+          </div>
+          <div class="experiment-card">
+            <div class="experiment-icon"><i class="fas fa-user-circle"></i></div>
+            <h3>AI-Generated Content Profiles</h3>
+            <p>Pushing the boundaries of digital identity and presence.</p>
+          </div>
+          <div class="experiment-card">
+            <div class="experiment-icon"><i class="fas fa-robot"></i></div>
+            <h3>OnlyAIam</h3>
+            <p>An AI companion that can do what I do, the way I do it.</p>
+          </div>
+          <div class="experiment-card">
+            <div class="experiment-icon"><i class="fas fa-flask"></i></div>
+            <h3>Other Experiments</h3>
+            <p>Things we're testing, breaking, and reshaping.</p>
+          </div>
+        </div>
+      </div>
     </section>
-    <section id="experiments">
-      <h2>Experiments</h2>
-      <ul>
-        <li><strong>TheAccelerators.ai</strong> - A platform redefining influence and acceleration in AI.</li>
-        <li><strong>AI-Generated Content Profiles</strong> - Pushing the boundaries of digital identity and presence.</li>
-        <li><strong>OnlyAIam</strong> - An AI companion that can do what I do, the way I do it.</li>
-        <li><strong>Other experiments and collaborations</strong> - Things we're testing, breaking, and reshaping.</li>
-      </ul>
+
+    <section id="why-we-do-it" class="section-card">
+      <div class="section-content">
+        <h2>Why We Do It</h2>
+        <p class="section-intro">We believe in the power of curiosity and the beauty of the unknown. Our journey is driven by three core principles that shape everything we do.</p>
+        <div class="why-cards">
+          <div class="why-card">
+            <div class="why-icon">
+              <i class="fas fa-compass"></i>
+            </div>
+            <h3>Embrace the Unknown</h3>
+            <p class="why-description">We step into uncharted territories with open minds and hearts. Every uncertainty is an opportunity for discovery.</p>
+            <ul class="why-points">
+              <li><i class="fas fa-check"></i> Accept the path as it unfolds</li>
+              <li><i class="fas fa-check"></i> Find wonder in uncertainty</li>
+              <li><i class="fas fa-check"></i> Trust the journey</li>
+            </ul>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">
+              <i class="fas fa-network-wired"></i>
+            </div>
+            <h3>Make New Connections</h3>
+            <p class="why-description">Through playful exploration and experimentation, we bridge gaps between ideas, people, and possibilities.</p>
+            <ul class="why-points">
+              <li><i class="fas fa-check"></i> Connect diverse concepts</li>
+              <li><i class="fas fa-check"></i> Build meaningful relationships</li>
+              <li><i class="fas fa-check"></i> Create unexpected synergies</li>
+            </ul>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">
+              <i class="fas fa-mountain"></i>
+            </div>
+            <h3>Take On Difficulty</h3>
+            <p class="why-description">We consciously choose the challenging path, knowing that true growth lies in pushing our boundaries.</p>
+            <ul class="why-points">
+              <li><i class="fas fa-check"></i> Challenge conventions</li>
+              <li><i class="fas fa-check"></i> Embrace complexity</li>
+              <li><i class="fas fa-check"></i> Grow through adversity</li>
+            </ul>
+          </div>
+        </div>
+        <div class="why-quote">
+          <blockquote>
+            "In the realm of AI, our greatest discoveries often come from embracing what we don't know."
+          </blockquote>
+          <div class="quote-author">— The AiWonderLAB Team</div>
+        </div>
+      </div>
     </section>
-    <section id="why-we-do-it">
-      <h2>Why We Do It</h2>
-      <ol>
-        <li><strong>Embrace the Unknown</strong> - Accept the way is given.</li>
-        <li><strong>Make New Connections</strong> - Through playing with everything around you.</li>
-        <li><strong>Take On Difficulty</strong> - Break the norm by consciously choosing difficult.</li>
-      </ol>
+
+    <section id="backing" class="section-card">
+      <div class="section-content">
+        <h2>Who's Backing us?</h2>
+        <p class="section-intro">We're proud to be supported by innovative companies and creative minds who share our vision for AI exploration and wonder.</p>
+        
+        <div class="partners-section">
+          <h3 class="partners-title">Our Strategic Partners</h3>
+          <div class="backing-grid">
+            <div class="company-card">
+              <div class="company-icon">
+                <i class="fas fa-coconut-alt"></i>
+              </div>
+              <h3>Athens Coconut</h3>
+              <p class="company-role">Strategy & storytelling</p>
+              <ul class="company-features">
+                <li><i class="fas fa-check-circle"></i> Brand Strategy</li>
+                <li><i class="fas fa-check-circle"></i> Content Creation</li>
+                <li><i class="fas fa-check-circle"></i> Narrative Design</li>
+              </ul>
+            </div>
+            <div class="company-card">
+              <div class="company-icon">
+                <i class="fas fa-chart-network"></i>
+              </div>
+              <h3>WDMF</h3>
+              <p class="company-role">Content & engagement</p>
+              <ul class="company-features">
+                <li><i class="fas fa-check-circle"></i> Community Building</li>
+                <li><i class="fas fa-check-circle"></i> Social Media</li>
+                <li><i class="fas fa-check-circle"></i> Content Strategy</li>
+              </ul>
+            </div>
+            <div class="company-card">
+              <div class="company-icon">
+                <i class="fas fa-rocket"></i>
+              </div>
+              <h3>Viral Passion</h3>
+              <p class="company-role">Performance & growth</p>
+              <ul class="company-features">
+                <li><i class="fas fa-check-circle"></i> Growth Strategy</li>
+                <li><i class="fas fa-check-circle"></i> Performance Marketing</li>
+                <li><i class="fas fa-check-circle"></i> Analytics</li>
+              </ul>
+            </div>
+            <div class="company-card">
+              <div class="company-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+              <h3>Let's Go Bananas</h3>
+              <p class="company-role">Creativity & entertainment</p>
+              <ul class="company-features">
+                <li><i class="fas fa-check-circle"></i> Creative Direction</li>
+                <li><i class="fas fa-check-circle"></i> Content Production</li>
+                <li><i class="fas fa-check-circle"></i> Entertainment Strategy</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-section">
+          <h3 class="team-title">The Initial Wonderers</h3>
+          <p class="team-intro">Meet the pioneers who dared to wonder and took the first steps into the unknown.</p>
+          <div class="team-grid">
+            <div class="team-card">
+              <div class="team-avatar"><i class="fas fa-user-astronaut"></i></div>
+              <h4>Nikos Louv</h4>
+              <p class="team-role">Master of Ceremony</p>
+              <p class="team-description">Vibing the AI exploration with a unique blend of creativity and strategic thinking.</p>
+              <div class="team-specialties">
+                <span><i class="fas fa-brain"></i> AI Vision</span>
+                <span><i class="fas fa-users"></i> Community</span>
+                <span><i class="fas fa-lightbulb"></i> Innovation</span>
+              </div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar"><i class="fas fa-atom"></i></div>
+              <h4>Quantum Bill</h4>
+              <p class="team-role">STEManiac</p>
+              <p class="team-description">Decoding the system with analytical precision and technical expertise.</p>
+              <div class="team-specialties">
+                <span><i class="fas fa-code"></i> Tech</span>
+                <span><i class="fas fa-chart-bar"></i> Analysis</span>
+                <span><i class="fas fa-cogs"></i> Systems</span>
+              </div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar"><i class="fas fa-palette"></i></div>
+              <h4>Lydia Karoto</h4>
+              <p class="team-role">Creative Soul</p>
+              <p class="team-description">Bridging communication gaps with strategic and creative solutions.</p>
+              <div class="team-specialties">
+                <span><i class="fas fa-comments"></i> Communication</span>
+                <span><i class="fas fa-paint-brush"></i> Design</span>
+                <span><i class="fas fa-bullseye"></i> Strategy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
-    <section id="backing">
-      <h2>Who's Backing us?</h2>
-      <ul>
-        <li><strong>Athens Coconut</strong> - Strategy & storytelling.</li>
-        <li><strong>WDMF</strong> - Content & engagement.</li>
-        <li><strong>Viral Passion</strong> - Performance & growth.</li>
-        <li><strong>Let's Go Bananas</strong> - Creativity & entertainment.</li>
-      </ul>
-      <h3>The Initial Wonderers</h3>
-      <ul>
-        <li><strong>Nikos Louv</strong> - Master of Ceremony, Vibing the AI exploration.</li>
-        <li><strong>Quantum Bill</strong> - STEManiac, Decodes the system.</li>
-        <li><strong>Lydia Karoto</strong> - Creative soul, Strategic communication.</li>
-        <li><strong>Art Team 1</strong> - Dedicated artists pushing boundaries, turning AI into visual wonders.</li>
-        <li><strong>Art Team 2</strong> - Dedicated artists pushing boundaries, turning AI into visual wonders.</li>
-        <li><strong>Dev Team 1</strong> - Brilliant developers bringing AI solutions to life with skill and innovation.</li>
-        <li><strong>Dev Team 2</strong> - Brilliant developers bringing AI solutions to life with skill and innovation.</li>
-      </ul>
+
+    <section id="what-we-do" class="section-card">
+      <div class="section-content">
+        <h2>What Are We Doing?</h2>
+        <div class="what-we-do-content">
+          <ul class="feature-list">
+            <li><i class="fas fa-play"></i> Playing with AI tools with the intent of expression and entertainment</li>
+            <li><i class="fas fa-random"></i> Mixing AI with ideas, people, and randomness.</li>
+            <li><i class="fas fa-wind"></i> Going with the flow</li>
+            <li><i class="fas fa-plus-circle"></i> Some part works out and we <strong>create</strong> something new</li>
+            <li><i class="fas fa-graduation-cap"></i> Some part doesn't and we <strong>learn</strong> something new</li>
+          </ul>
+          <p class="motto">»We Share All Wonders«</p>
+        </div>
+      </div>
     </section>
-    <section id="what-we-do">
-      <h2>What Are We Doing?</h2>
-      <ul>
-        <li>Playing with AI tools with the intent of expression and entertainment</li>
-        <li>Mixing AI with ideas, people, and randomness.</li>
-        <li>Going with the flow</li>
-        <li>Some part works out and we <strong>create</strong> something new</li>
-        <li>Some part doesn't and we <strong>learn</strong> something new</li>
-      </ul>
-      <p>»We Share All Wonders«</p>
+
+    <section id="connect" class="section-card connect-section">
+      <div class="section-content">
+        <h2>Let's Connect</h2>
+        <p class="connect-intro">Ready to join us on this AI exploration journey? Let's create wonders together.</p>
+        <div class="connect-grid">
+          <div class="connect-card">
+            <div class="connect-icon">
+              <i class="fas fa-flask-vial"></i>
+            </div>
+            <h3>Explore Our Experiments</h3>
+            <p>Discover our latest AI innovations and experiments. Join us in pushing the boundaries of what's possible.</p>
+            <a href="#experiments" class="button primary"><i class="fas fa-arrow-right"></i> View Experiments</a>
+          </div>
+          <div class="connect-card">
+            <div class="connect-icon">
+              <i class="fas fa-envelope-open-text"></i>
+            </div>
+            <h3>Get in Touch</h3>
+            <p>Have an idea or want to collaborate? We're always excited to hear from fellow AI enthusiasts.</p>
+            <a href="mailto:contact@aiwonderlab.com" class="button primary"><i class="fas fa-paper-plane"></i> Contact Us</a>
+          </div>
+        </div>
+        <div class="connect-social">
+          <p>Follow our journey</p>
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+      </div>
     </section>
-    <section id="contact">
-      <h2>Contact Us</h2>
-      <p>Please reach out to us for any inquiries.</p>
+
+    <section id="contact" class="section-card">
+      <div class="section-content">
+        <h2>Contact Us</h2>
+        <div class="contact-content">
+          <p>Ready to wonder with us? Get in touch!</p>
+          <div class="contact-buttons">
+            <a href="mailto:contact@aiwonderlab.com" class="button primary"><i class="fas fa-envelope"></i> Email Us</a>
+            <a href="#" class="button secondary"><i class="fas fa-comments"></i> Start a Conversation</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="behind-scenes" class="section-card behind-scenes-section">
+      <div class="section-content">
+        <button class="reveal-button">
+          <i class="fas fa-lightbulb"></i>
+          <span>Curious about this website?</span>
+        </button>
+        <div class="reveal-content">
+          <h2>Created by AI in 30 Minutes</h2>
+          <p class="reveal-description">This entire website, from concept to code, was created using artificial intelligence in just 30 minutes. Every aspect - the design, content, animations, and functionality - was generated through AI assistance, demonstrating the incredible possibilities of human-AI collaboration.</p>
+          <div class="ai-stats">
+            <div class="stat-item">
+              <i class="fas fa-clock"></i>
+              <span>30 Minutes</span>
+              <p>Total Creation Time</p>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-robot"></i>
+              <span>100% AI</span>
+              <p>Generated Content</p>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-code"></i>
+              <span>3 Files</span>
+              <p>HTML, CSS, JS</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
   <footer>
-    <p>&copy; 2023 AiWonderLAB. All Rights Reserved.</p>
+    <div class="footer-content">
+      <p>&copy; 2025 AiWonderLAB. All Rights Reserved.</p>
+      <div class="social-links">
+        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+      </div>
+    </div>
   </footer>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
   <script src="scripts.js"></script>
 </body>
 </html> 

@@ -19,7 +19,7 @@ A modern, animated website for AiWonderLAB showcasing our experiments, team, and
 
 ## View the Site
 
-Visit [https://[your-username].github.io/aiwonderlab](https://kimonarrow.github.io/AIWonderLab/) to see the live site.
+Visit [https://kimonarrow.github.io/AIWonderLab/](https://kimonarrow.github.io/AIWonderLab/) to see the live site.
 
 ## Local Development
 

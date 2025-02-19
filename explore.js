@@ -10,9 +10,12 @@ const VISIBILITY_RANGE = 300;
 const FADE_RATIO = 250;
 const scrollPoints = document.querySelectorAll('.scroll-point');
 const spaceship = document.querySelector('.spaceship');
-const STAR_COUNT = 50000;
+const STAR_COUNT = 5000;
 const SPEED_LINES_COUNT = 300;
 const STAR_SPEED = 0.8;
+const WORMHOLE_SEGMENTS = 50;
+const WORMHOLE_RADIUS = 20;
+let wormhole;
 
 init();
 animate();
@@ -84,7 +87,9 @@ function init() {
         scene.add(line);
     }
 
+    // Set initial camera position
     camera.position.z = 5;
+    document.body.classList.remove('loading');
 
     // Smooth scrolling
     let targetScrollPosition = 0;
@@ -103,11 +108,53 @@ function init() {
 
     window.addEventListener('resize', onWindowResize, false);
 
+    // Update return home button to simple redirect
     document.querySelector('.return-home').addEventListener('click', () => {
-        document.body.style.opacity = 0;
-        setTimeout(() => {
-            window.location.href = 'index3d.html';
-        }, 1000);
+        document.body.classList.add('loading');
+        
+        // Create wormhole
+        createWormhole();
+        
+        // Store initial camera position
+        const initialCameraPos = camera.position.clone();
+        let progress = 0;
+        
+        function transitionAnimation() {
+            progress += 0.01;
+            
+            // Update wormhole
+            wormhole.material.uniforms.time.value += 0.1;
+            wormhole.material.uniforms.progress.value = progress;
+            
+            // Move camera through wormhole
+            camera.position.z = initialCameraPos.z - progress * 100;
+            
+            // Rotate camera slightly for effect
+            camera.rotation.z = Math.sin(progress * Math.PI * 2) * 0.1;
+            
+            // Fade out stars
+            stars.forEach(star => {
+                star.material.opacity = Math.max(0, 1 - progress * 2);
+            });
+            
+            // Fade out speed lines
+            speedLines.forEach(line => {
+                line.material.opacity = Math.max(0, 1 - progress * 2);
+            });
+
+            if (progress < 1) {
+                requestAnimationFrame(transitionAnimation);
+            } else {
+                // Store final state
+                sessionStorage.setItem('transitionState', JSON.stringify({
+                    progress: 1,
+                    timestamp: Date.now()
+                }));
+                window.location.href = 'index3d.html';
+            }
+        }
+        
+        transitionAnimation();
     });
 }
 
@@ -196,7 +243,7 @@ function animate() {
         }
         line.material.opacity = Math.min(0.4, speedFactor * 0.2);
     });
-
+    
     renderer.render(scene, camera);
 }
 
@@ -219,4 +266,78 @@ scrollPoints.forEach((point, index) => {
         const targetDepth = sections[index].dataset.depth;
         targetScrollPosition = parseFloat(targetDepth);
     });
-}); 
+});
+
+function createWarpField() {
+    const warpGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(STAR_COUNT * 3);
+    
+    for(let i = 0; i < STAR_COUNT; i++) {
+        const theta = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 50 + 10;
+        const z = (Math.random() - 0.5) * 500;
+        
+        positions[i * 3] = Math.cos(theta) * radius;
+        positions[i * 3 + 1] = Math.sin(theta) * radius;
+        positions[i * 3 + 2] = z;
+    }
+    
+    warpGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const warpMaterial = new THREE.PointsMaterial({
+        color: 0x6366f1,
+        size: 12,
+        transparent: true,
+        opacity: 1
+    });
+    
+    warpField = new THREE.Points(warpGeometry, warpMaterial);
+    scene.add(warpField);
+}
+
+function createWormhole() {
+    const geometry = new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 0, -1000)
+        ]),
+        WORMHOLE_SEGMENTS,
+        WORMHOLE_RADIUS,
+        12,
+        false
+    );
+
+    const material = new THREE.ShaderMaterial({
+        uniforms: {
+            time: { value: 0 },
+            progress: { value: 0 }
+        },
+        vertexShader: `
+            varying vec2 vUv;
+            varying vec3 vPosition;
+            void main() {
+                vUv = uv;
+                vPosition = position;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform float time;
+            uniform float progress;
+            varying vec2 vUv;
+            varying vec3 vPosition;
+            
+            void main() {
+                float stripe = sin(vUv.x * 50.0 + time * 5.0) * 0.5 + 0.5;
+                float edge = 1.0 - abs(vUv.y - 0.5) * 2.0;
+                float alpha = stripe * edge * (1.0 - progress);
+                vec3 color = mix(vec3(0.4, 0.4, 1.0), vec3(1.0, 0.4, 1.0), stripe);
+                gl_FragColor = vec4(color, alpha);
+            }
+        `,
+        transparent: true,
+        side: THREE.DoubleSide
+    });
+
+    wormhole = new THREE.Mesh(geometry, material);
+    scene.add(wormhole);
+} 

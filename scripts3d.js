@@ -4,6 +4,12 @@ let currentSection = 0;
 let isTransitioning = false;
 let contentWall = null;
 let exploreButton3D = null;
+let warpSpeed = 0;
+let warpStars = [];
+const WARP_STAR_COUNT = 1000;
+const WORMHOLE_SEGMENTS = 50;
+const WORMHOLE_RADIUS = 20;
+let wormhole;
 
 init();
 animate();
@@ -183,6 +189,72 @@ function init() {
             }
         });
     });
+
+    // Check for transition state
+    const transitionData = sessionStorage.getItem('transitionState');
+    const startWithTransition = transitionData && 
+        (Date.now() - JSON.parse(transitionData).timestamp < 1000);
+
+    if (startWithTransition) {
+        // Create wormhole
+        createWormhole();
+        
+        // Hide all scene elements initially
+        if (scene.userData.torusKnot) scene.userData.torusKnot.material.opacity = 0;
+        if (scene.userData.sphere) scene.userData.sphere.material.opacity = 0;
+        if (scene.userData.text) scene.userData.text.material.opacity = 0;
+        if (exploreButton3D) exploreButton3D.material.opacity = 0;
+        if (scene.userData.particles) scene.userData.particles.material.opacity = 0;
+        
+        // Start at the end of the wormhole
+        camera.position.z = -100;
+        
+        let progress = 1;
+        function exitWormhole() {
+            progress -= 0.01;
+            
+            // Update wormhole
+            wormhole.material.uniforms.time.value += 0.1;
+            wormhole.material.uniforms.progress.value = progress;
+            
+            // Move camera out of wormhole
+            camera.position.z = -100 + (130 * (1 - progress));
+            
+            // Rotate camera back to normal
+            camera.rotation.z = Math.sin(progress * Math.PI * 2) * 0.1;
+            
+            // Fade in scene elements
+            const fadeIn = Math.min(1, (1 - progress) * 2);
+            if (scene.userData.torusKnot) {
+                scene.userData.torusKnot.material.opacity = fadeIn;
+                scene.userData.torusKnot.material.transparent = true;
+            }
+            if (scene.userData.sphere) {
+                scene.userData.sphere.material.opacity = fadeIn;
+                scene.userData.sphere.material.transparent = true;
+            }
+            if (scene.userData.text) {
+                scene.userData.text.material.opacity = fadeIn;
+                scene.userData.text.material.transparent = true;
+            }
+            if (exploreButton3D) {
+                exploreButton3D.material.opacity = fadeIn;
+                exploreButton3D.material.transparent = true;
+            }
+            if (scene.userData.particles) {
+                scene.userData.particles.material.opacity = fadeIn;
+            }
+            
+            if (progress > 0) {
+                requestAnimationFrame(exitWormhole);
+            } else {
+                scene.remove(wormhole);
+                document.getElementById('overlay').style.opacity = 1;
+            }
+        }
+        
+        exitWormhole();
+    }
 }
 
 function createContentWall() {
@@ -326,23 +398,138 @@ function createContentWall() {
     });
 }
 
+function createWarpEffect() {
+    const warpGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(WARP_STAR_COUNT * 3);
+    
+    for(let i = 0; i < WARP_STAR_COUNT; i++) {
+        const theta = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 50 + 10;
+        const z = (Math.random() - 0.5) * 500;
+        
+        positions[i * 3] = Math.cos(theta) * radius;
+        positions[i * 3 + 1] = Math.sin(theta) * radius;
+        positions[i * 3 + 2] = z;
+    }
+    
+    warpGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const warpMaterial = new THREE.PointsMaterial({
+        color: 0x6366f1,
+        size: 12,
+        transparent: true,
+        opacity: 0
+    });
+    
+    const warpField = new THREE.Points(warpGeometry, warpMaterial);
+    scene.add(warpField);
+    return warpField;
+}
+
+function createWormhole() {
+    const geometry = new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 0, -1000)
+        ]),
+        WORMHOLE_SEGMENTS,
+        WORMHOLE_RADIUS,
+        12,
+        false
+    );
+
+    const material = new THREE.ShaderMaterial({
+        uniforms: {
+            time: { value: 0 },
+            progress: { value: 0 }
+        },
+        vertexShader: `
+            varying vec2 vUv;
+            varying vec3 vPosition;
+            void main() {
+                vUv = uv;
+                vPosition = position;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform float time;
+            uniform float progress;
+            varying vec2 vUv;
+            varying vec3 vPosition;
+            
+            void main() {
+                float stripe = sin(vUv.x * 50.0 + time * 5.0) * 0.5 + 0.5;
+                float edge = 1.0 - abs(vUv.y - 0.5) * 2.0;
+                float alpha = stripe * edge * (1.0 - progress);
+                vec3 color = mix(vec3(0.4, 0.4, 1.0), vec3(1.0, 0.4, 1.0), stripe);
+                gl_FragColor = vec4(color, alpha);
+            }
+        `,
+        transparent: true,
+        side: THREE.DoubleSide
+    });
+
+    wormhole = new THREE.Mesh(geometry, material);
+    scene.add(wormhole);
+}
+
 function handleExplore() {
     if (isTransitioning) return;
-    
     isTransitioning = true;
+
+    // Create wormhole
+    createWormhole();
     
-    // Fade out effect
+    // Store initial camera position
+    const initialCameraPos = camera.position.clone();
+    let progress = 0;
+    
+    // Fade out overlay
     const overlay = document.getElementById('overlay');
-    overlay.style.transition = 'opacity 1s ease';
     overlay.style.opacity = 0;
-    
-    // Move camera back
-    targetPosition.z = 60;
-    
-    // After camera movement and fade, redirect to explore page
-    setTimeout(() => {
-        window.location.href = 'explore.html';
-    }, 2000);
+
+    // Transition animation
+    function transitionAnimation() {
+        progress += 0.01;
+        
+        // Update wormhole
+        wormhole.material.uniforms.time.value += 0.1;
+        wormhole.material.uniforms.progress.value = progress;
+        
+        // Move camera through wormhole
+        camera.position.z = initialCameraPos.z - progress * 100;
+        
+        // Rotate camera slightly for effect
+        camera.rotation.z = Math.sin(progress * Math.PI * 2) * 0.1;
+        
+        // Fade out scene elements
+        const fadeOut = Math.max(0, 1 - progress * 2);
+        if (scene.userData.torusKnot) scene.userData.torusKnot.material.opacity = fadeOut;
+        if (scene.userData.sphere) scene.userData.sphere.material.opacity = fadeOut;
+        if (scene.userData.text) scene.userData.text.material.opacity = fadeOut;
+        if (exploreButton3D) exploreButton3D.material.opacity = fadeOut;
+        if (scene.userData.particles) scene.userData.particles.material.opacity = fadeOut;
+
+        if (progress < 1) {
+            requestAnimationFrame(transitionAnimation);
+        } else {
+            // Store final state
+            sessionStorage.setItem('transitionState', JSON.stringify({
+                progress: 1,
+                timestamp: Date.now()
+            }));
+            window.location.href = 'explore.html';
+        }
+    }
+
+    // Make all materials transparent
+    if (scene.userData.torusKnot) scene.userData.torusKnot.material.transparent = true;
+    if (scene.userData.sphere) scene.userData.sphere.material.transparent = true;
+    if (scene.userData.text) scene.userData.text.material.transparent = true;
+    if (exploreButton3D) exploreButton3D.material.transparent = true;
+    if (scene.userData.particles) scene.userData.particles.material.transparent = true;
+
+    transitionAnimation();
 }
 
 function onWindowResize() {

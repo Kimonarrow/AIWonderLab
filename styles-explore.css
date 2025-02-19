@@ -1,3 +1,20 @@
+body.loading {
+    overflow: hidden;
+}
+
+body.loading #content-sections,
+body.loading .navigation-hints,
+body.loading .scroll-progress {
+    opacity: 0;
+    visibility: hidden;
+}
+
+#content-sections,
+.navigation-hints,
+.scroll-progress {
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
 body, html {
     margin: 0;
     padding: 0;

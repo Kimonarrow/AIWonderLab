@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AiWonderLAB - Explore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles-explore.css">
+</head>
+<body>
+    <!-- Container for the three.js canvas -->
+    <div id="space-container"></div>
+    
+    <!-- Content sections that will be rendered in 3D space -->
+    <div id="content-sections">
+        <section class="space-section" data-depth="0">
+            <h1>AiWonderLAB</h1>
+            <p>"We don't know where we're going and that's Wonderful."</p>
+        </section>
+        
+        <section class="space-section" data-depth="500">
+            <h2>How We Work</h2>
+            <p>We start with curiosity, embrace play, and discover unexpected results.</p>
+            <ul>
+                <li>Curiosity – We start with a thought, problem, or an inspiration to tackle.</li>
+                <li>Play – We willingly play with any scenario, test, tweak, fail, and retry.</li>
+                <li>Result – Something happens: a discovery, insight, or unexpected result.</li>
+            </ul>
+        </section>
+
+        <section class="space-section" data-depth="1000">
+            <h2>Our Experiments</h2>
+            <ul>
+                <li>TheAccelerators.ai – Redefining influence and acceleration in AI.</li>
+                <li>AI-Generated Content Profiles – Pushing boundaries of digital identity.</li>
+                <li>OnlyAIam – Your AI companion.</li>
+                <li>Other Experiments – Testing, breaking, and reshaping ideas.</li>
+            </ul>
+        </section>
+
+        <section class="space-section" data-depth="1500">
+            <h2>Why We Do It</h2>
+            <p>We believe in the power of curiosity and the beauty of the unknown.</p>
+            <ul>
+                <li>Embrace the Unknown</li>
+                <li>Make New Connections</li>
+                <li>Take On Difficulty</li>
+            </ul>
+        </section>
+
+        <section class="space-section" data-depth="2000">
+            <h2>Who's Backing us?</h2>
+            <ul>
+                <li>Athens Coconut – Strategy & storytelling.</li>
+                <li>WDMF – Content & engagement.</li>
+                <li>Viral Passion – Performance & growth.</li>
+                <li>Let's Go Bananas – Creativity & entertainment.</li>
+            </ul>
+        </section>
+
+        <section class="space-section" data-depth="2500">
+            <h2>What Are We Doing?</h2>
+            <ul>
+                <li>Playing with AI tools with the intent of expression and entertainment.</li>
+                <li>Mixing AI with ideas, people, and randomness.</li>
+                <li>Going with the flow.</li>
+                <li>Some part works out and we create something new.</li>
+                <li>Some part doesn't and we learn something new.</li>
+            </ul>
+        </section>
+    </div>
+
+    <div class="scroll-progress">
+        <div class="scroll-track">
+            <div class="scroll-points">
+                <span class="scroll-point" data-label="Launch"></span>
+                <span class="scroll-point" data-label="How We Work"></span>
+                <span class="scroll-point" data-label="Experiments"></span>
+                <span class="scroll-point" data-label="Why We Do It"></span>
+                <span class="scroll-point" data-label="Who's Backing us?"></span>
+                <span class="scroll-point" data-label="What We Do"></span>
+            </div>
+            <div class="scroll-line"></div>
+        </div>
+        <div class="spaceship">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path fill="currentColor" d="M12,0 C12,0 17,4 17,12 C17,20 12,24 12,24 C12,24 7,20 7,12 C7,4 12,0 12,0"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="navigation-hints">
+        <div class="scroll-hint">Scroll to travel through space</div>
+        <button class="return-home">Return to Launch Pad</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="explore.js"></script>
+</body>
+</html> 

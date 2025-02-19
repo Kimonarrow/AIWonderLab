@@ -1,0 +1,244 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+#space-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.space-section {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    padding: 2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 2;
+    pointer-events: none;
+    max-width: 800px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.space-section.active {
+    opacity: 1;
+}
+
+.space-section h1 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #6366f1, #0ea5e9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+}
+
+.space-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: #6366f1;
+}
+
+.space-section p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.space-section ul {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+
+.space-section li {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    position: relative;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.space-section li:before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #6366f1;
+}
+
+.navigation-hints {
+    position: fixed;
+    bottom: 2rem;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 2;
+}
+
+.scroll-hint {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    opacity: 0.7;
+    animation: pulse 2s infinite;
+}
+
+.return-home {
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.return-home:hover {
+    background: rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(-5px); }
+    100% { opacity: 0.7; transform: translateY(0); }
+}
+
+.speed-lines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.speed-lines.active {
+    opacity: 1;
+}
+
+/* Scroll Progress with Spaceship */
+.scroll-progress {
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 80vh;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+}
+
+.scroll-track {
+    position: relative;
+    height: 100%;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+.scroll-line {
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background: rgba(99, 102, 241, 0.2);
+    z-index: 1;
+}
+
+.scroll-points {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem 0;
+}
+
+.scroll-point {
+    width: 10px;
+    height: 10px;
+    background: rgba(99, 102, 241, 0.5);
+    border-radius: 50%;
+    position: relative;
+    left: 45px;
+    transition: all 0.3s ease;
+}
+
+.scroll-point::before {
+    content: attr(data-label);
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.scroll-point:hover::before,
+.scroll-point.active::before {
+    opacity: 1;
+    right: 25px;
+}
+
+.scroll-point.active {
+    background: rgb(99, 102, 241);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+}
+
+.spaceship {
+    position: absolute;
+    left: 36px;
+    transform-origin: center;
+    color: #fff;
+    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+    transition: top 0.3s ease;
+}
+
+.spaceship svg {
+    transform: rotate(90deg);
+    animation: spaceshipHover 2s infinite ease-in-out;
+}
+
+@keyframes spaceshipHover {
+    0%, 100% { transform: rotate(90deg) translateX(-2px); }
+    50% { transform: rotate(90deg) translateX(2px); }
+}
+
+/* Make the spaceship zigzag */
+.spaceship {
+    animation: zigzag 4s infinite ease-in-out;
+}
+
+@keyframes zigzag {
+    0% { left: 36px; }
+    25% { left: 46px; }
+    75% { left: 26px; }
+    100% { left: 36px; }
+} 

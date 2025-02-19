@@ -5,9 +5,9 @@ let scrollPosition = 0;
 let scrollVelocity = 0;
 const sections = document.querySelectorAll('.space-section');
 const totalDepth = 2500;
-const SCROLL_SENSITIVITY = 0.1;
-const VISIBILITY_RANGE = 300;
-const FADE_RATIO = 250;
+const SCROLL_SENSITIVITY = 0.07;
+const VISIBILITY_RANGE = 800;
+const FADE_RATIO = 300;
 const scrollPoints = document.querySelectorAll('.scroll-point');
 const spaceship = document.querySelector('.spaceship');
 const STAR_COUNT = 5000;
@@ -16,6 +16,18 @@ const STAR_SPEED = 0.8;
 const WORMHOLE_SEGMENTS = 50;
 const WORMHOLE_RADIUS = 20;
 let wormhole;
+let eyeGroup, iris, pupil;
+let mouseX = 0, mouseY = 0;
+const EYE_RADIUS = 80;
+const IRIS_RADIUS = 40;
+const PUPIL_RADIUS = 20;
+const MAX_EYE_MOVEMENT = 5;
+const BLINK_INTERVAL = 5000; // 5 seconds
+let lastBlinkTime = Date.now();
+let isBlinking = false;
+let blinkProgress = 0;
+let isAnimatingScroll = false;
+let targetScrollPosition = 0;
 
 init();
 animate();
@@ -91,16 +103,46 @@ function init() {
     camera.position.z = 5;
     document.body.classList.remove('loading');
 
-    // Smooth scrolling
-    let targetScrollPosition = 0;
+    let lastScrollTime = Date.now();
+    
     window.addEventListener('wheel', (e) => {
-        targetScrollPosition = Math.max(0, Math.min(totalDepth, targetScrollPosition + e.deltaY * SCROLL_SENSITIVITY));
-        scrollVelocity = e.deltaY * 0.02;
-    });
+        if (isAnimatingScroll) return; // Ignore wheel events during animation
+        
+        const currentTime = Date.now();
+        const timeDelta = currentTime - lastScrollTime;
+        
+        if (timeDelta > 16) {
+            const scrollDelta = e.deltaY * SCROLL_SENSITIVITY;
+            targetScrollPosition = Math.max(0, Math.min(totalDepth, targetScrollPosition + scrollDelta));
+            scrollVelocity = scrollDelta * 0.1;
+            lastScrollTime = currentTime;
+        }
+        
+        e.preventDefault();
+    }, { passive: false });
 
     function updateScroll() {
-        scrollPosition += (targetScrollPosition - scrollPosition) * 0.2;
-        scrollVelocity *= 0.95;
+        if (!isAnimatingScroll) {  // Only update scroll if not in click animation
+            const scrollDelta = targetScrollPosition - scrollPosition;
+            scrollPosition += scrollDelta * 0.1;
+            scrollVelocity *= 0.9;
+            
+            // Snap to nearest section when almost stopped
+            if (Math.abs(scrollDelta) < 0.1 && Math.abs(scrollVelocity) < 0.1) {
+                const nearestSection = Array.from(sections).reduce((nearest, section) => {
+                    const depth = parseFloat(section.dataset.depth);
+                    const currentDistance = Math.abs(scrollPosition - depth);
+                    const nearestDistance = Math.abs(scrollPosition - nearest);
+                    return currentDistance < nearestDistance ? depth : nearest;
+                }, scrollPosition);
+                
+                if (Math.abs(scrollPosition - nearestSection) < 50) {
+                    scrollPosition = nearestSection;
+                    targetScrollPosition = nearestSection;
+                }
+            }
+        }
+        
         updateSections();
         requestAnimationFrame(updateScroll);
     }
@@ -156,6 +198,22 @@ function init() {
         
         transitionAnimation();
     });
+
+    // Add lights specifically for the eye
+    const frontLight = new THREE.DirectionalLight(0xffffff, 1);
+    frontLight.position.set(0, 0, 1);
+    scene.add(frontLight);
+
+    const ambientLight = new THREE.AmbientLight(0x666666);
+    scene.add(ambientLight);
+
+    createEye();
+
+    // Add mouse move listener
+    document.addEventListener('mousemove', (event) => {
+        mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+        mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+    });
 }
 
 function createGradientTexture() {
@@ -186,23 +244,54 @@ function updateSections() {
         
         if (distance < VISIBILITY_RANGE) {
             section.classList.add('active');
-            const scale = 1 - (distance / FADE_RATIO) * 0.15;
-            const opacity = Math.max(0, 1 - (distance / FADE_RATIO) * 1.5);
+            
+            // Smoother scaling and opacity transitions
+            let scale = 1;
+            let opacity = 1;
+            
+            if (distance > 0) {
+                scale = 1 - Math.pow(distance / FADE_RATIO, 2) * 0.15;
+                opacity = 1 - Math.pow(distance / FADE_RATIO, 2);
+            }
+            
+            // Ensure full visibility when spaceship is at the dot
+            if (distance < 50) {
+                scale = 1;
+                opacity = 1;
+            }
+            
             section.style.transform = `translate(-50%, -50%) scale(${scale})`;
             section.style.opacity = opacity;
             
-            // Update scroll progress
-            scrollPoints.forEach(point => point.classList.remove('active'));
-            if (scrollPoints[index]) {
-                scrollPoints[index].classList.add('active');
-            }
+            // Update scroll progress and dot labels
+            scrollPoints.forEach((point, pointIndex) => {
+                point.classList.remove('active');
+                point.classList.remove('near-spaceship');
+                
+                // Calculate distance between spaceship and this dot
+                const dotDepth = parseFloat(sections[pointIndex].dataset.depth);
+                const spaceshipDepth = scrollPosition;
+                const distanceToDot = Math.abs(spaceshipDepth - dotDepth);
+                
+                // Show label when spaceship is near
+                if (distanceToDot < 100) {
+                    point.classList.add('near-spaceship');
+                }
+                
+                // Active state for current section
+                if (pointIndex === index && distance < 50) {
+                    point.classList.add('active');
+                    section.style.opacity = 1;
+                    section.style.transform = 'translate(-50%, -50%) scale(1)';
+                }
+            });
         } else {
             section.classList.remove('active');
             section.style.opacity = 0;
         }
     });
 
-    // Update spaceship position
+    // Update spaceship position with smoother movement
     const progress = (scrollPosition / totalDepth) * 100;
     const spaceshipPosition = Math.min(100, Math.max(0, progress));
     spaceship.style.top = `${spaceshipPosition}%`;
@@ -244,6 +333,65 @@ function animate() {
         line.material.opacity = Math.min(0.4, speedFactor * 0.2);
     });
     
+    // Update eye movement and blinking
+    if (eyeGroup) {
+        const currentTime = Date.now();
+        
+        // Handle blinking
+        if (!isBlinking && currentTime - lastBlinkTime > BLINK_INTERVAL) {
+            isBlinking = true;
+            blinkProgress = 0;
+            lastBlinkTime = currentTime;
+        }
+
+        if (isBlinking) {
+            blinkProgress += 0.15; // Speed of blink
+            
+            // Full blink animation cycle
+            let blinkScale;
+            if (blinkProgress < 1) {
+                // Closing eye
+                blinkScale = 1 - blinkProgress;
+            } else if (blinkProgress < 2) {
+                // Opening eye
+                blinkScale = (blinkProgress - 1);
+            } else {
+                // Reset blink
+                isBlinking = false;
+                blinkScale = 1;
+            }
+            
+            // Only scale the eye parts, not the triangle
+            if (blinkScale > 0) {
+                eyeGroup.userData.eye.scale.y = Math.max(0.1, blinkScale);
+                iris.scale.y = Math.max(0.1, blinkScale);
+                pupil.scale.y = Math.max(0.1, blinkScale);
+            } else {
+                eyeGroup.userData.eye.scale.y = 1;
+                iris.scale.y = 1;
+                pupil.scale.y = 1;
+            }
+        }
+
+        // Smooth eye movement
+        const targetX = mouseX * MAX_EYE_MOVEMENT;
+        const targetY = mouseY * MAX_EYE_MOVEMENT;
+        
+        iris.position.x += (targetX - iris.position.x) * 0.1;
+        iris.position.y += (targetY - iris.position.y) * 0.1;
+        
+        pupil.position.x = iris.position.x;
+        pupil.position.y = iris.position.y;
+
+        // Keep the mystical rotation for rays only
+        eyeGroup.children.forEach(child => {
+            if (child.type === 'Line') {
+                child.rotation.z = Math.sin(Date.now() * 0.0005) * 0.1;
+                child.material.opacity = 0.3 + Math.sin(Date.now() * 0.002) * 0.2;
+            }
+        });
+    }
+
     renderer.render(scene, camera);
 }
 
@@ -260,11 +408,44 @@ window.addEventListener('load', () => {
     document.body.style.opacity = 1;
 });
 
-// Add click handlers for the scroll points
+// Update the click handlers for the scroll points
 scrollPoints.forEach((point, index) => {
     point.addEventListener('click', () => {
-        const targetDepth = sections[index].dataset.depth;
-        targetScrollPosition = parseFloat(targetDepth);
+        const targetDepth = parseFloat(sections[index].dataset.depth);
+        
+        if (isAnimatingScroll) return;
+        
+        isAnimatingScroll = true;
+        scrollVelocity = 0;
+        
+        const startPosition = scrollPosition;
+        const distance = targetDepth - startPosition;
+        const duration = 1000;
+        const startTime = Date.now();
+        
+        function smoothScroll() {
+            const currentTime = Date.now();
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            const easeProgress = progress < 0.5
+                ? 2 * progress * progress
+                : -1 + (4 - 2 * progress) * progress;
+            
+            scrollPosition = startPosition + (distance * easeProgress);
+            targetScrollPosition = scrollPosition;
+            
+            if (progress < 1) {
+                requestAnimationFrame(smoothScroll);
+            } else {
+                scrollPosition = targetDepth;
+                targetScrollPosition = targetDepth;
+                scrollVelocity = 0;
+                isAnimatingScroll = false;
+            }
+        }
+        
+        smoothScroll();
     });
 });
 
@@ -340,4 +521,121 @@ function createWormhole() {
 
     wormhole = new THREE.Mesh(geometry, material);
     scene.add(wormhole);
+}
+
+function createEye() {
+    eyeGroup = new THREE.Group();
+    
+    // Create the eye (a true smooth oval)
+    const eyeCurve = new THREE.EllipseCurve(
+        0, 0,                     // ax, aY (center)
+        EYE_RADIUS, EYE_RADIUS * 0.5,  // xRadius, yRadius
+        0, 2 * Math.PI,           // startAngle, endAngle
+        false,                    // clockwise
+        0                         // rotation
+    );
+    const eyePoints = eyeCurve.getPoints(100);
+    const eyeShape = new THREE.Shape(eyePoints);
+    const eyeGeometry = new THREE.ShapeGeometry(eyeShape);
+    const eyeMaterial = new THREE.MeshPhongMaterial({
+        color: 0xffffff,
+        side: THREE.DoubleSide,
+        shininess: 100,
+        specular: 0x333333
+    });
+    const eye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+    eyeGroup.add(eye);
+    eyeGroup.userData.eye = eye; // Store reference
+
+    // Create iris with gradient and texture
+    const irisGeometry = new THREE.CircleGeometry(IRIS_RADIUS, 64);
+    const irisTexture = createIrisTexture();
+    const irisMaterial = new THREE.MeshPhongMaterial({
+        map: irisTexture,
+        transparent: true,
+        opacity: 0.9,
+        shininess: 50,
+        specular: 0x555555
+    });
+    iris = new THREE.Mesh(irisGeometry, irisMaterial);
+    iris.position.z = 0.1;
+    eyeGroup.add(iris);
+
+    // Create pupil
+    const pupilGeometry = new THREE.CircleGeometry(PUPIL_RADIUS, 32);
+    const pupilMaterial = new THREE.MeshPhongMaterial({
+        color: 0x000000,
+        shininess: 100,
+        specular: 0x111111
+    });
+    pupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+    pupil.position.z = 0.2;
+    eyeGroup.add(pupil);
+
+    // Add rays of light around the eye
+    createLightRays();
+
+    // Position the eye group
+    eyeGroup.position.z = -200;
+    eyeGroup.scale.set(1.5, 1.5, 1.5);
+    scene.add(eyeGroup);
+}
+
+function createIrisTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 1024;
+    const ctx = canvas.getContext('2d');
+
+    // Create a detailed radial gradient for the iris
+    const gradient = ctx.createRadialGradient(512, 512, 50, 512, 512, 512);
+    gradient.addColorStop(0, '#8B4513');     // Dark brown center
+    gradient.addColorStop(0.3, '#CD853F');     
+    gradient.addColorStop(0.5, '#D2B48C');    
+    gradient.addColorStop(0.7, '#CD853F');
+    gradient.addColorStop(1, '#8B4513');       // Dark brown edge
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1024, 1024);
+
+    // Draw subtle radial striations for iris fibers
+    ctx.globalAlpha = 0.3;
+    ctx.strokeStyle = '#654321'; // Darker stroke for striations
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 360; i += 5) {
+        ctx.beginPath();
+        ctx.moveTo(512, 512);
+        const endX = 512 + Math.cos(i * Math.PI / 180) * 512;
+        const endY = 512 + Math.sin(i * Math.PI / 180) * 512;
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+    }
+    return new THREE.CanvasTexture(canvas);
+}
+
+function createLightRays() {
+    const rayCount = 12;
+    const rayLength = EYE_RADIUS * 3;
+    const rayGeometry = new THREE.BufferGeometry();
+    const rayMaterial = new THREE.LineBasicMaterial({
+        color: 0xffd700,
+        transparent: true,
+        opacity: 0.5
+    });
+
+    for (let i = 0; i < rayCount; i++) {
+        const angle = (i / rayCount) * Math.PI * 2;
+        const x = Math.cos(angle) * rayLength;
+        const y = Math.sin(angle) * rayLength;
+
+        const points = [];
+        points.push(new THREE.Vector3(0, 0, -1));
+        points.push(new THREE.Vector3(x, y, -1));
+
+        const ray = new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints(points),
+            rayMaterial
+        );
+        eyeGroup.add(ray);
+    }
 } 

@@ -47,11 +47,11 @@ body, html {
     z-index: 2;
     pointer-events: none;
     max-width: 800px;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.85);
     border-radius: 20px;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.1);
 }
 
 .space-section.active {
@@ -59,25 +59,66 @@ body, html {
 }
 
 .space-section h1 {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+    font-size: 4.5rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #6366f1, #0ea5e9, #6366f1);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient 3s ease infinite;
+    text-shadow: 0 0 30px rgba(99, 102, 241, 0.8);
+    letter-spacing: 4px;
+    font-weight: 700;
+    position: relative;
+}
+
+.space-section h1::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     background: linear-gradient(135deg, #6366f1, #0ea5e9);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+    opacity: 0.5;
+    filter: blur(12px);
 }
 
 .space-section h2 {
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
-    color: #6366f1;
+    font-size: 2.8rem;
+    margin-bottom: 2rem;
+    color: transparent;
+    background: linear-gradient(90deg, #6366f1, #818cf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    letter-spacing: 2px;
+    position: relative;
+    display: inline-block;
+}
+
+.space-section h2::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    width: 10px;
+    height: 2px;
+    background: #6366f1;
+    box-shadow: 0 0 10px #6366f1;
 }
 
 .space-section p {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
     color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
 }
 
 .space-section ul {
@@ -87,18 +128,28 @@ body, html {
 }
 
 .space-section li {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    padding-left: 1.5rem;
+    font-size: 1.2rem;
+    margin-bottom: 1.2rem;
+    padding-left: 2rem;
+    color: rgba(255, 255, 255, 0.85);
     position: relative;
-    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
 }
 
 .space-section li:before {
-    content: '→';
+    content: '›';
     position: absolute;
     left: 0;
     color: #6366f1;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    transform: translateY(-2px);
+}
+
+.space-section li:hover {
+    color: rgba(255, 255, 255, 1);
+    transform: translateX(5px);
 }
 
 .navigation-hints {
@@ -208,20 +259,39 @@ body, html {
 .scroll-point::before {
     content: attr(data-label);
     position: absolute;
-    right: 20px;
+    right: 30px;
     top: 50%;
     transform: translateY(-50%);
     white-space: nowrap;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9rem;
     opacity: 0;
     transition: all 0.3s ease;
+    
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+    font-weight: 500;
 }
 
+/* Show label when spaceship is near or on hover */
 .scroll-point:hover::before,
-.scroll-point.active::before {
+.scroll-point.active::before,
+.scroll-point.near-spaceship::before {
     opacity: 1;
     right: 25px;
+}
+
+/* Make the dot and label more prominent when spaceship is near */
+.scroll-point.near-spaceship {
+    background: rgba(99, 102, 241, 0.8);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+.scroll-point.near-spaceship::before {
+    color: #fff;
+    text-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
 }
 
 .scroll-point.active {
@@ -258,4 +328,34 @@ body, html {
     25% { left: 46px; }
     75% { left: 26px; }
     100% { left: 36px; }
+}
+
+/* Add animation for gradient text */
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Add a subtle scan line effect */
+.space-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        transparent 0%,
+        rgba(99, 102, 241, 0.05) 50%,
+        transparent 100%
+    );
+    background-size: 100% 4px;
+    animation: scan 8s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
 } 

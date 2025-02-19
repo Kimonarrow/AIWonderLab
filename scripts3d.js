@@ -10,6 +10,18 @@ const WARP_STAR_COUNT = 1000;
 const WORMHOLE_SEGMENTS = 50;
 const WORMHOLE_RADIUS = 20;
 let wormhole;
+let solarSystem;
+const planets = [];
+const PLANET_DATA = [
+    { name: 'Mercury', radius: 0.8, distance: 10, speed: 0.01, color: 0xC0C0C0 },
+    { name: 'Venus', radius: 1.2, distance: 15, speed: 0.008, color: 0xFFA500 },
+    { name: 'Earth', radius: 1.5, distance: 20, speed: 0.006, color: 0x6B93D6 },
+    { name: 'Mars', radius: 1.1, distance: 25, speed: 0.004, color: 0xFF4500 },
+    { name: 'Jupiter', radius: 3.0, distance: 35, speed: 0.002, color: 0xFFA07A },
+    { name: 'Saturn', radius: 2.5, distance: 45, speed: 0.001, color: 0xFFD700 },
+    { name: 'Uranus', radius: 1.8, distance: 55, speed: 0.0008, color: 0x40E0D0 },
+    { name: 'Neptune', radius: 1.7, distance: 65, speed: 0.0006, color: 0x4169E1 }
+];
 
 init();
 animate();
@@ -45,7 +57,7 @@ function init() {
     const loader = new THREE.FontLoader();
     loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
         // Main Title
-        const textGeometry = new THREE.TextGeometry('AiWonderLAB', {
+        const textGeometry = new THREE.TextGeometry('AiWonderLab', {
             font: font,
             size: 3,
             height: 1,
@@ -255,6 +267,9 @@ function init() {
         
         exitWormhole();
     }
+
+    // Add solar system
+    createSolarSystem();
 }
 
 function createContentWall() {
@@ -473,6 +488,87 @@ function createWormhole() {
     scene.add(wormhole);
 }
 
+function createSolarSystem() {
+    solarSystem = new THREE.Group();
+    
+    // Create sun
+    const sunGeometry = new THREE.SphereGeometry(3, 32, 32);
+    const sunMaterial = new THREE.MeshPhongMaterial({
+        color: 0xFDB813,
+        emissive: 0xFDB813,
+        emissiveIntensity: 0.5
+    });
+    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    solarSystem.add(sun);
+
+    // Add point light at sun's position
+    const sunLight = new THREE.PointLight(0xFDB813, 2, 100);
+    sun.add(sunLight);
+
+    // Create planets
+    PLANET_DATA.forEach(data => {
+        const planetGroup = new THREE.Group();
+        
+        // Create orbit line
+        const orbitGeometry = new THREE.RingGeometry(data.distance, data.distance + 0.1, 64);
+        const orbitMaterial = new THREE.MeshBasicMaterial({
+            color: 0x666666,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.3
+        });
+        const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
+        orbit.rotation.x = Math.PI / 2;
+        solarSystem.add(orbit);
+
+        // Create planet
+        const planetGeometry = new THREE.SphereGeometry(data.radius, 32, 32);
+        const planetMaterial = new THREE.MeshPhongMaterial({
+            color: data.color,
+            shininess: 30
+        });
+        const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+        
+        // Position planet
+        planet.position.x = data.distance;
+        
+        // Add planet to its group
+        planetGroup.add(planet);
+        
+        // Store rotation data
+        planetGroup.userData = {
+            rotationSpeed: data.speed,
+            distance: data.distance
+        };
+        
+        planets.push(planetGroup);
+        solarSystem.add(planetGroup);
+    });
+
+    // Add Saturn's rings
+    const saturnIndex = 5; // Saturn is the 6th planet (0-based index)
+    const saturnGroup = planets[saturnIndex];
+    const saturn = saturnGroup.children[0];
+    
+    const ringGeometry = new THREE.RingGeometry(3.5, 5, 32);
+    const ringMaterial = new THREE.MeshPhongMaterial({
+        color: 0xFFD700,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.8
+    });
+    const rings = new THREE.Mesh(ringGeometry, ringMaterial);
+    rings.rotation.x = Math.PI / 3;
+    saturn.add(rings);
+
+    // Update the position and scale of the solar system
+    solarSystem.scale.set(0.5, 0.5, 0.5); // Make it smaller to fit better
+    solarSystem.position.set(-20, 5, -20); // Move it closer to the text (x: left/right, y: up/down, z: front/back)
+    solarSystem.rotation.x = 0.3; // Slight tilt for better visibility
+    solarSystem.rotation.z = 0.1; // Slight rotation for better angle
+    scene.add(solarSystem);
+}
+
 function handleExplore() {
     if (isTransitioning) return;
     isTransitioning = true;
@@ -588,5 +684,21 @@ function animate() {
     }
 
     controls.update();
+
+    // Rotate planets
+    planets.forEach(planetGroup => {
+        planetGroup.rotation.y += planetGroup.userData.rotationSpeed;
+        
+        // Optional: Make planets rotate on their axis
+        if (planetGroup.children[0]) {
+            planetGroup.children[0].rotation.y += 0.02;
+        }
+    });
+
+    // Optional: Gentle solar system movement
+    if (solarSystem) {
+        solarSystem.rotation.y += 0.0001;
+    }
+
     renderer.render(scene, camera);
 } 

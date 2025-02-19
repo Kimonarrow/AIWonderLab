@@ -1,3 +1,6 @@
+/* Add futuristic font import */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+
 html, body {
   margin: 0;
   padding: 0;
@@ -35,9 +38,29 @@ html, body {
 }
 
 #overlay h1 {
-  font-size: 3em;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 3.5em;
   margin: 0.2em 0;
-  text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #fff 30%, #6366f1 70%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.5),
+               0 0 20px rgba(99, 102, 241, 0.3);
+  animation: titleGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+  from {
+    text-shadow: 0 0 10px rgba(99, 102, 241, 0.5),
+                 0 0 20px rgba(99, 102, 241, 0.3);
+  }
+  to {
+    text-shadow: 0 0 15px rgba(99, 102, 241, 0.7),
+                 0 0 25px rgba(99, 102, 241, 0.5),
+                 0 0 35px rgba(99, 102, 241, 0.3);
+  }
 }
 
 #overlay p {

@@ -22,6 +22,7 @@ const PLANET_DATA = [
     { name: 'Uranus', radius: 1.8, distance: 55, speed: 0.0008, color: 0x40E0D0 },
     { name: 'Neptune', radius: 1.7, distance: 65, speed: 0.0006, color: 0x4169E1 }
 ];
+let abstractObjects = [];
 
 init();
 animate();
@@ -270,6 +271,7 @@ function init() {
 
     // Add solar system
     createSolarSystem();
+    createAbstractObjects();
 }
 
 function createContentWall() {
@@ -569,6 +571,106 @@ function createSolarSystem() {
     scene.add(solarSystem);
 }
 
+function createAbstractObjects() {
+    // Create DNA-like double helix
+    const helixGroup = new THREE.Group();
+    const helixPoints = 50;
+    const helixRadius = 15;
+    for (let i = 0; i < helixPoints; i++) {
+        const t = i / helixPoints;
+        const angle = t * Math.PI * 4;
+        
+        // Create two strands
+        [1, -1].forEach(strand => {
+            const geometry = new THREE.IcosahedronGeometry(0.3);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x6366f1,
+                emissive: 0x2a2a8a,
+                shininess: 100,
+                transparent: true,
+                opacity: 0.8
+            });
+            const point = new THREE.Mesh(geometry, material);
+            
+            point.position.x = Math.cos(angle) * helixRadius * 0.3;
+            point.position.y = t * 30 - 15;
+            point.position.z = Math.sin(angle) * helixRadius * 0.3 * strand - 40;
+            
+            helixGroup.add(point);
+            
+            // Add connecting lines
+            if (i > 0 && i % 2 === 0) {
+                const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(
+                        Math.cos(angle) * helixRadius * 0.3,
+                        t * 30 - 15,
+                        Math.sin(angle) * helixRadius * 0.3 - 40
+                    ),
+                    new THREE.Vector3(
+                        Math.cos(angle) * helixRadius * 0.3,
+                        t * 30 - 15,
+                        -Math.sin(angle) * helixRadius * 0.3 - 40
+                    )
+                ]);
+                const lineMaterial = new THREE.LineBasicMaterial({
+                    color: 0x6366f1,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const line = new THREE.Line(lineGeometry, lineMaterial);
+                helixGroup.add(line);
+            }
+        });
+    }
+    scene.add(helixGroup);
+    abstractObjects.push(helixGroup);
+
+    // Create floating crystals
+    const crystalCount = 15;
+    for (let i = 0; i < crystalCount; i++) {
+        const geometry = new THREE.OctahedronGeometry(Math.random() * 2 + 1);
+        const material = new THREE.MeshPhongMaterial({
+            color: 0xff3366,
+            emissive: 0x2a2a8a,
+            shininess: 100,
+            transparent: true,
+            opacity: 0.7
+        });
+        const crystal = new THREE.Mesh(geometry, material);
+        
+        // Random positions around the scene
+        crystal.position.set(
+            (Math.random() - 0.5) * 60,
+            (Math.random() - 0.5) * 40,
+            (Math.random() - 0.5) * 40 - 30
+        );
+        
+        crystal.rotation.set(
+            Math.random() * Math.PI,
+            Math.random() * Math.PI,
+            Math.random() * Math.PI
+        );
+        
+        scene.add(crystal);
+        abstractObjects.push(crystal);
+    }
+
+    // Create energy field
+    const fieldGeometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+    const fieldMaterial = new THREE.MeshPhongMaterial({
+        color: 0x00ff88,
+        emissive: 0x00aa44,
+        shininess: 100,
+        transparent: true,
+        opacity: 0.3,
+        wireframe: true
+    });
+    const energyField = new THREE.Mesh(fieldGeometry, fieldMaterial);
+    energyField.position.set(30, 0, -50);
+    scene.add(energyField);
+    abstractObjects.push(energyField);
+}
+
 function handleExplore() {
     if (isTransitioning) return;
     isTransitioning = true;
@@ -699,6 +801,22 @@ function animate() {
     if (solarSystem) {
         solarSystem.rotation.y += 0.0001;
     }
+
+    // Animate abstract objects
+    abstractObjects.forEach((obj, index) => {
+        // Rotate objects
+        obj.rotation.x += 0.001 * (index % 2 ? 1 : -1);
+        obj.rotation.y += 0.002 * (index % 3 ? 1 : -1);
+        
+        // Pulse scale
+        const scale = 1 + Math.sin(Date.now() * 0.001 + index) * 0.1;
+        obj.scale.set(scale, scale, scale);
+        
+        // Make crystals float
+        if (obj.geometry instanceof THREE.OctahedronGeometry) {
+            obj.position.y += Math.sin(Date.now() * 0.001 + index) * 0.02;
+        }
+    });
 
     renderer.render(scene, camera);
 } 
